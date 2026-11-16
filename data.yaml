@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 3
+names: ['blue_ball', 'red_ball', 'white_ball']
+
+roboflow:
+  workspace: eric-alves-s-workspace
+  project: bocciavision
+  version: 1
+  license: Private
+  url: https://app.roboflow.com/eric-alves-s-workspace/bocciavision/1

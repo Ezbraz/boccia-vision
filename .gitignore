@@ -1,0 +1,21 @@
+# === Boccia Vision: gerado pelo organizador ===
+# Arquivos do ambiente de desenvolvimento
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.idea/
+.pytest_cache/
+
+# Dados, vídeos e artefatos grandes
+/data/roboflow/
+/data/processed/
+/data/videos/
+/runs/
+*.pt
+*.onnx
+
+# Temporários
+*.log
+.DS_Store
+# === fim do bloco Boccia Vision ===

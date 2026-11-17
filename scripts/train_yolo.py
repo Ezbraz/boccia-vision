@@ -2,7 +2,7 @@
 
 Exemplos:
     python scripts/train_yolo.py
-    python scripts/train_yolo.py --data data/processed/video_seed42/data.yaml
+    python scripts/train_yolo.py --data data/processed/video_seed17111/data.yaml
 """
 from pathlib import Path
 import argparse
@@ -19,6 +19,7 @@ def main():
     parser.add_argument("--imgsz", type=int, default=640)
     parser.add_argument("--batch", type=int, default=8)
     parser.add_argument("--nome", default="treino_01")
+    parser.add_argument("--seed", type=int, default=17111)
     args = parser.parse_args()
 
     dados = args.data if args.data.is_absolute() else (RAIZ / args.data)
@@ -26,6 +27,8 @@ def main():
         raise FileNotFoundError(f"Dataset não encontrado: {dados}")
     modelo = YOLO(args.modelo)
     modelo.train(
+        seed=args.seed,
+        deterministic=True,
         data=str(dados.resolve()),
         epochs=args.epocas,
         imgsz=args.imgsz,

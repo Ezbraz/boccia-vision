@@ -14,7 +14,7 @@ RAIZ = Path(__file__).resolve().parents[1]
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", type=Path, default=RAIZ / "data/roboflow/v1/data.yaml")
-    parser.add_argument("--modelo", default="yolo11n.pt")
+    parser.add_argument("--modelo", default="yolo26s.pt")
     parser.add_argument("--epocas", type=int, default=80)
     parser.add_argument("--imgsz", type=int, default=640)
     parser.add_argument("--batch", type=int, default=8)

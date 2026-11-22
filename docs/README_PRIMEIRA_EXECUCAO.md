@@ -2,7 +2,7 @@
 
 Este guia explica **como preparar o ambiente e executar o fluxo disponível na branch `develop`** do projeto Boccia Vision, desde o clone até a primeira inferência com YOLO.
 
-> **Estado do projeto:** este documento descreve os scripts existentes na `develop` na revisão de 22/11/2026. O modelo definido para os testes e experimentos definitivos é o **YOLO26s**. No código atual, o `train_yolo.py` ainda tem `yolo11n.pt` como padrão; por isso, neste guia passamos **`--modelo yolo26s.pt` explicitamente**. Ainda não há um pipeline completo de homografia, tracking e medição.
+> **Estado do projeto:** o modelo decidido é o **YOLO26s**, e `train_yolo.py` já usa `yolo26s.pt` por padrão. O caminho padrão de `--data` ainda é legado (`data/roboflow/v1/data.yaml`), portanto informe explicitamente o YAML de um dataset processado. A nova integração com Drive e o processador multi-origem ainda não estão implementados; este guia distingue o fluxo legado do fluxo planejado. Homografia, tracking e medição também não estão implementados.
 
 ## 0. Pré-requisitos e dados necessários
 
@@ -81,9 +81,11 @@ python -c "import torch; print('CUDA disponível:', torch.cuda.is_available())"
 
 > Se o computador tiver GPU NVIDIA e o comando retornar `False`, consulte a instalação de PyTorch adequada ao seu sistema/CUDA. Não é necessário ter GPU para testar o ambiente, mas o treinamento em CPU pode ser demorado.
 
-## 3. Colocar o dataset no local esperado
+## 3. Localização dos datasets: organização nova e formato legado
 
-O script de reorganização atual procura um dataset YOLO exportado do Roboflow em:
+**Organização aprovada para os dados do Drive:** `data/roboflow/{youtube,local,synthetic}/v1/`, cada origem com `images/`, `labels/` e `data.yaml`. O script atual de divisão **ainda não aceita essa estrutura**.
+
+O script **legado** de reorganização procura uma única exportação YOLO em:
 
 ```text
 data/
@@ -101,7 +103,7 @@ data/
             └── labels/
 ```
 
-Crie as pastas, se necessário, e extraia ali o dataset **já anotado**, preservando os nomes de imagens e labels. Cada imagem deve ter um arquivo `.txt` com o mesmo nome-base na pasta de labels correspondente, inclusive se for uma imagem sem objetos (nesse caso, o arquivo pode estar vazio).
+**Não misture ou mova os três datasets novos para esse caminho legado.** A estrutura acima serve somente para compreender ou reproduzir o fluxo antigo. Na organização aprovada, cada imagem deve ter um `.txt` com o mesmo nome-base dentro da respectiva pasta `labels/` (um arquivo vazio pode representar uma imagem sem objetos).
 
 No esquema de três classes atualmente usado pelo script:
 
@@ -114,9 +116,11 @@ names: ['blue_ball', 'red_ball', 'white_ball']
 
 **Atenção:** confira os índices das classes no `data.yaml` exportado e nas anotações. **Não substitua os nomes/índices automaticamente** se o dataset tiver outro esquema de classes. O `reorganizar_dataset.py` atual possui essa lista de três classes fixa no código e precisará ser adaptado para o experimento de classe genérica `bola`.
 
-## 4. Reorganizar o dataset com uma semente registrada
+## 4. Dividir o dataset com uma semente registrada (fluxo legado)
 
-Na **raiz** do repositório, execute:
+**Atenção:** o comando abaixo só se aplica ao formato legado descrito acima, com pelo menos três grupos/vídeos distintos. **Não execute este divisor sobre os três datasets do Drive**, pois eles usam uma organização diferente e ainda não temos grupos independentes suficientes para o split por vídeo.
+
+Somente para reproduzir um experimento antigo compatível, execute na raiz:
 
 ```bash
 python scripts/reorganizar_dataset.py --modo video --seed 42
@@ -141,7 +145,7 @@ Se você **já recebeu da equipe um dataset processado e validado**, com seu pr�
 
 ## 5. Treinar o modelo YOLO26s
 
-Com o dataset processado presente, execute:
+Com um dataset **já processado e validado** presente (por exemplo, um conjunto legado compatível), execute:
 
 ```bash
 python scripts/train_yolo.py --data data/processed/video_seed42/data.yaml --modelo yolo26s.pt --epocas 80 --imgsz 640 --batch 8 --seed 42 --nome primeiro_teste_yolo26s
@@ -177,7 +181,7 @@ Se houver erro de memória de GPU, considere reduzir o parâmetro `--batch`, por
 Escolha uma imagem que esteja disponível no computador (substitua o caminho de exemplo pelo arquivo real):
 
 ```bash
-python scripts/predict.py --imagem data/roboflow/v1/test/images/EXEMPLO.jpg --pesos runs/detect/primeiro_teste_yolo26s/weights/best.pt
+python scripts/predict.py --imagem data/processed/video_seed42/test/images/EXEMPLO.jpg --pesos runs/detect/primeiro_teste_yolo26s/weights/best.pt
 ```
 
 **Substitua `EXEMPLO.jpg` pelo nome de uma imagem existente.**
@@ -191,7 +195,7 @@ O script salva as imagens com as detecções em `runs/predict/` (em uma subpasta
 | `scripts/reorganizar_dataset.py` | Reunir e dividir o dataset com semente |
 | `scripts/train_yolo.py` | Treinar o detector |
 | `scripts/predict.py` | Executar inferência em uma imagem |
-| `data/roboflow/v1/` | Dataset anotado de origem, fornecido separadamente |
+| `data/roboflow/{youtube,local,synthetic}/v1/` | Datasets de origem organizados por fonte (novo padrão; ainda não processado automaticamente) |
 | `data/processed/` | Datasets reorganizados localmente |
 | `runs/detect/` | Saídas dos treinamentos e pesos |
 | `runs/predict/` | Imagens geradas por inferência |
@@ -203,7 +207,7 @@ O script salva as imagens com as detecções em `runs/predict/` (em uma subpasta
 ## 8. Problemas comuns
 
 **`FileNotFoundError: Dataset não encontrado`**  
-Verifique se o dataset foi recebido, extraído em `data/roboflow/v1/` e se o caminho fornecido em `--data` aponta para um `data.yaml` existente.
+Confirme se o caminho fornecido em `--data` aponta para o `data.yaml` de um dataset processado e validado. O caminho padrão de `train_yolo.py` ainda usa o layout legado; os datasets originais separados por origem não podem ser treinados diretamente sem o processamento necessário.
 
 **`Divisao por video exige ao menos 3 videos/grupos de origem`**  
 O dataset não possui ao menos três grupos reconhecidos pelo script. Confira a quantidade de vídeos e o padrão de nomeação dos arquivos; não substitua por divisão aleatória sem avaliar o risco de vazamento entre conjuntos.
@@ -222,11 +226,19 @@ Confira a disponibilidade de GPU e o valor de `--batch`. Registre quaisquer ajus
 
 ## 9. Limites desta primeira execução e próximos passos do projeto
 
-O fluxo disponível hoje é:
+O fluxo legado disponível hoje (apenas com dataset compatível) é:
 
 ```text
-Clonar → Instalar → Receber dataset → Dividir → Treinar YOLO26s → Predizer
+Clonar → Instalar → Receber dataset legado → Dividir → Treinar YOLO26s → Predizer
 ```
+
+O fluxo planejado para os datasets atuais do Drive é:
+
+```text
+Clonar → Preparar pastas → Sincronizar Drive → Validar/processar Real, Sintético e Híbrido → Treinar → Avaliar
+```
+
+Esse novo fluxo ainda depende dos scripts `setup_project.py`, `download_datasets.py` e da refatoração de `reorganizar_dataset.py`.
 
 Ainda não estão implementados na branch `develop`:
 

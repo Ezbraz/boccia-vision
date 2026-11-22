@@ -5,7 +5,7 @@ Instruções permanentes para o Codex e outros agentes que trabalharem neste rep
 ## Contexto e fonte de verdade
 
 - Projeto de TCC: **Boccia Vision**, visão computacional para bocha paralímpica.
-- Leia `docs/METHODOLOGY.md` antes de mudar preparação de dados, treinamento ou avaliação.
+- Leia `METHODOLOGY.md` antes de mudar preparação de dados, treinamento ou avaliação.
 - Arquitetura **escolhida para o projeto: YOLO26s** (`yolo26s.pt`), pela biblioteca Ultralytics.
 - Repositório identificado no GitHub como `Ezbraz/boccia-vision`, branch de trabalho `develop` (link antigo `erixalv/boccia-vision` redireciona).
 - Distinguir rigorosamente **implementado**, **decidido**, **proposto** e **pendente**. Não apresentar funcionalidades ou experimentos planejados como concluídos.
@@ -25,8 +25,8 @@ Instruções permanentes para o Codex e outros agentes que trabalharem neste rep
 
 - Roboflow gerencia imagens/anotações; tags de origem: `youtube`, `local`, `synthetic`.
 - Exportação adotada: **YOLO26 detecção**, preservando imagens, labels `.txt` e `data.yaml`. Preferir imagens originais, sem augmentation no Roboflow.
-- Entradas planejadas: `data/roboflow/youtube/v1/`, `data/roboflow/local/v1/`, `data/roboflow/synthetic/v1/` (pastas ignoradas pelo Git).
-- Exportações podem conter `train/images`, `train/labels`, `valid/images`, `valid/labels`, `test/images`, `test/labels` e `data.yaml`; **não usar os splits de origem sem revalidar**.
+- Entradas por origem: `data/roboflow/youtube/v1/`, `data/roboflow/local/v1/`, `data/roboflow/synthetic/v1/`; as versões `v2/` serão usadas no estudo definitivo (pastas ignoradas pelo Git).
+- No Google Drive, cada origem em `v1/` contém `images/`, `labels/` e `data.yaml`. Outras exportações podem vir com `train/`, `valid/` e `test/`; **não usar os splits de origem sem revalidar**.
 - **Separar por grupos independentes:** vídeo/partida/sessão nos reais; família de cena/renderização nos sintéticos. Variantes e frames correlacionados devem ficar no mesmo subconjunto.
 - **Nunca contaminar teste:** sem imagens do teste em treino, balanceamento, augmentation ou seleção de hiperparâmetros. Manter grupos e splits congelados nas comparações e nas três sementes de treinamento.
 - Reconstruir IDs das classes pelo **nome semântico** de cada YAML; verificar objetos, bounding boxes normalizadas e integridade imagem/label. Para a versão genérica, trocar a classe, **não** as caixas.
@@ -35,7 +35,7 @@ Instruções permanentes para o Codex e outros agentes que trabalharem neste rep
 
 ## Estado atual dos scripts (inspeção da branch develop em 22/11/2026)
 
-- `scripts/train_yolo.py` aceita `--modelo`, mas seu **default atual é `yolo11n.pt`**; para usar o modelo decidido, passar `--modelo yolo26s.pt` até atualizar e validar o script.
+- `scripts/train_yolo.py` já usa **`yolo26s.pt` como padrão** para `--modelo`. O parâmetro `--data`, porém, ainda aponta por padrão para o caminho legado `data/roboflow/v1/data.yaml`; informe explicitamente `--data` com o YAML de um dataset processado e validado.
 - `scripts/reorganizar_dataset.py` ainda lê **uma exportação** em `data/roboflow/v1` e tem proporção default `70/15/15`. **Não implementa** o pipeline multi-origem e os híbridos; requer refatoração e testes.
 - `scripts/predict.py` executa inferência com pesos locais.
 - `requirements.txt` contém `ultralytics` e `opencv-python`, sem versões fixadas.
@@ -50,7 +50,7 @@ Instruções permanentes para o Codex e outros agentes que trabalharem neste rep
 4. Criar testes automatizados para processamento de dados, conversão de classe e prevenção de vazamento.
 5. Para comparação justa, manter checkpoint, splits, hardware, hiperparâmetros, critérios e protocolo de avaliação equivalentes; variar somente fatores planejados.
 6. Registrar seeds, versão do dataset, commit Git, versões do ambiente, parâmetros, métricas e artefatos, sem inventar resultados.
-7. Antes de mudar metodologia, apresentar a alteração como proposta; atualizar `docs/METHODOLOGY.md` quando aprovada.
+7. Antes de mudar metodologia, apresentar a alteração como proposta; atualizar `METHODOLOGY.md` quando aprovada.
 8. Assinalar como **PENDENTE** qualquer split final, proporção híbrida, protocolo de teste ou hiperparâmetro que ainda não tenha sido definido.
 9. Google Drive é fonte de distribuição das exportações; integração deve ser parametrizada e não guardar credenciais no Git.
 

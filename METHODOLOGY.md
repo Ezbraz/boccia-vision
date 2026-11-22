@@ -37,7 +37,7 @@ Anotar consistentemente bolas detectáveis, inclusive parcialmente ocluídas, re
 
 **DECIDIDO:** exportações em **YOLO26 (Object Detection)** no Roboflow, preservando arquivos de imagem, labels `.txt` e `data.yaml` com resolução original quando possível. As tags de proveniência são `youtube`, `local`, `synthetic`. Não aplicar augmentation no Roboflow para não perder o controle do protocolo experimental; aplicar transformações exclusivamente no treinamento quando o regime exigir.
 
-Estrutura planejada das entradas locais (não versionadas):
+Estrutura das entradas locais planejada para sincronização com o Drive (não versionadas no Git):
 
 ```text
 data/roboflow/
@@ -46,7 +46,7 @@ data/roboflow/
   synthetic/v1/
 ```
 
-Cada versão exportada pode trazer `train/valid/test` com subpastas `images` e `labels`, mais `data.yaml`. Esses splits de exportação **não devem ser assumidos como os splits científicos finais**.
+Na versão `v1` presente no Google Drive, cada origem contém `images/`, `labels/` e `data.yaml` diretamente em sua pasta. As versões `v2` preservarão a separação por origem. Outras exportações podem trazer `train/valid/test`, mas esses splits **não devem ser assumidos como os splits científicos finais**.
 
 ### Esquemas de classes
 
@@ -91,7 +91,7 @@ O script legado lista IDs com nomes na ordem azul, vermelha, branca; **validar o
 
 Controlar checkpoint inicial, conjuntos de teste, configurações, épocas máximas, early stopping, resolução, batch e métrica. Variar **somente o fator estudado** e não selecionar modelos pelo teste. Registrar versão Python/Ultralytics/PyTorch, GPU, seed, parâmetros, revisão Git e versão do dataset.
 
-**Divergência observada em 22/11/2026:** `scripts/train_yolo.py` ainda usa o **default `yolo11n.pt`**, embora aceite `--modelo`. Até sua atualização, usar explicitamente `--modelo yolo26s.pt`; não afirmar que o código já está padronizado em YOLO26s.
+**Estado verificado em 22/11/2026:** `scripts/train_yolo.py` já usa **`yolo26s.pt` por padrão**. Seu `--data` padrão ainda aponta para `data/roboflow/v1/data.yaml` (layout legado); usar `--data` explicitamente com o YAML de um conjunto processado e validado enquanto não houver refatoração.
 
 ## 7. Métricas e análise quantitativa
 
@@ -103,7 +103,7 @@ A análise deve distinguir qualidade **in-domain** de generalização **cross-do
 
 ## 8. Reprodutibilidade e organização dos artefatos
 
-**PROPOSTO:** manter configurações, manifestos e métricas em `experiments/` (versionáveis) e dados/pesos grandes em `data/processed/` e `runs/` (ignorados pelo Git):
+**PROPOSTO:** manter configurações, manifestos e métricas em `experiments` (versionáveis) e dados/pesos grandes em `data/processed/` e `runs/` (ignorados pelo Git):
 
 ```text
 experiments/
@@ -123,12 +123,12 @@ O repositório `Ezbraz/boccia-vision` na branch `develop` foi inspecionado em 22
 
 | Arquivo | Estado verificado |
 |---|---|
-| `scripts/train_yolo.py` | Treinamento Ultralytics; default atual `yolo11n.pt` |
+| `scripts/train_yolo.py` | Treinamento Ultralytics; modelo padrão `yolo26s.pt`, mas `--data` ainda aponta para o layout legado |
 | `scripts/reorganizar_dataset.py` | Reorganiza **uma** exportação `data/roboflow/v1`; ainda sem composição Y/L/S e híbridos |
 | `scripts/predict.py` | Inferência com pesos locais |
 | `requirements.txt` | `ultralytics`, `opencv-python`, sem pinagem de versões |
-| `docs/`, `tests/`, `experiments/`, `src/boccia_vision/` | Estruturas iniciais disponíveis |
-| `.gitignore` | Ignora dados Roboflow, processados, vídeos, pesos e `runs/` |
+| ``, `tests`, `experiments/`, `src/boccia_vision/` | Estruturas iniciais disponíveis |
+| `.gitignore` | Ignora dados Roboflow, processados, vídeos, pesos e `runs` |
 
 **Próximas implementações propostas, ainda não concluídas:**
 
@@ -137,7 +137,7 @@ O repositório `Ezbraz/boccia-vision` na branch `develop` foi inspecionado em 22
 3. Corrigir padronização e validar classes por nome semântico.
 4. Planejar e congelar splits independentes, documentando o teste externo real.
 5. Implementar construção dos datasets Real, Sintético, Híbrido balanceado e Híbrido completo, preservando grupos e manifestos.
-6. Atualizar o treinamento para YOLO26s e registrar parâmetros por experimento.
+6. Atualizar o caminho padrão de dados no treinamento, controlar regimes de augmentation e registrar parâmetros por experimento (modelo padrão já é YOLO26s).
 7. Rodar piloto, validar avaliação cruzada e depois a matriz principal de 36 execuções.
 
 ## 10. Questões em aberto

@@ -16,7 +16,7 @@ def main():
     parser.add_argument("--data", type=Path, default=RAIZ / "data/roboflow/v1/data.yaml")
     parser.add_argument("--modelo", default="yolo26s.pt")
     parser.add_argument("--epocas", type=int, default=80)
-    parser.add_argument("--imgsz", type=int, default=640)
+    parser.add_argument("--imgsz", type=int, default=960)
     parser.add_argument("--batch", type=int, default=8)
     parser.add_argument("--nome", default="treino_01")
     parser.add_argument("--seed", type=int, default=17111)

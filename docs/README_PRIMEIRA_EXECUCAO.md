@@ -2,7 +2,7 @@
 
 Este guia explica **como preparar o ambiente e executar o fluxo disponível na branch `develop`** do projeto Boccia Vision, desde o clone até a primeira inferência com YOLO.
 
-> **Estado do projeto:** o modelo decidido é o **YOLO26s**, e `train_yolo.py` já usa `yolo26s.pt` por padrão. O caminho padrão de `--data` ainda é legado (`data/roboflow/v1/data.yaml`), portanto informe explicitamente o YAML de um dataset processado. A nova integração com Drive e o processador multi-origem ainda não estão implementados; este guia distingue o fluxo legado do fluxo planejado. Homografia, tracking e medição também não estão implementados.
+> **Estado do projeto:** o modelo decidido é o **YOLO26s**, e `train_yolo.py` já usa `yolo26s.pt` por padrão. O caminho padrão de `--data` ainda é legado (`data/roboflow/v1/data.yaml`), portanto informe explicitamente o YAML de um dataset onprocessado. A nova integração com Drive e o processador multi-origem ainda não estão implementados; este guia distingue o fluxo legado do fluxo planejado. Homografia, tracking e medição também não estão implementados.
 
 ## 0. Pré-requisitos e dados necessários
 

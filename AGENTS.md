@@ -40,7 +40,7 @@ Instruções permanentes para o Codex e outros agentes que trabalharem neste rep
 - `scripts/predict.py` executa inferência com pesos locais.
 - `requirements.txt` contém `ultralytics` e `opencv-python`, sem versões fixadas.
 - `src/boccia_vision/` para código reutilizável, `scripts/` para CLIs, `tests/` para testes, `experiments/` para configurações/manifests/resultados textuais, `docs/` para documentação.
-- Os scripts `setup_project.py` e `download_datasets.py` foram discutidos, mas **não estavam presentes** na revisão; não alegar que já existem.
+- `scripts/setup_project.py` está implementado e prepara os diretórios locais de `v1` e `v2` sem sobrescrever dados. `scripts/download_datasets.py` realiza o download de exportações via rclone, exigindo configuração local de acesso ao Drive. A integração real ainda deve ser validada em máquina da equipe.
 
 ## Como trabalhar neste repositório
 

@@ -238,7 +238,7 @@ O fluxo planejado para os datasets atuais do Drive é:
 Clonar → Preparar pastas → Sincronizar Drive → Validar/processar Real, Sintético e Híbrido → Treinar → Avaliar
 ```
 
-Esse novo fluxo ainda depende dos scripts `setup_project.py`, `download_datasets.py` e da refatoração de `reorganizar_dataset.py`.
+O `setup_project.py` e o `download_datasets.py` já foram implementados. Primeiro execute `python scripts/setup_project.py` (ou a prévia com `--dry-run`); depois configure o rclone conforme `docs/README_DOWNLOAD_DRIVE.md` e execute `python scripts/download_datasets.py --version v1`. A construção dos conjuntos Real, Sintético e Híbrido ainda depende da refatoração de `reorganizar_dataset.py`.
 
 Ainda não estão implementados na branch `develop`:
 

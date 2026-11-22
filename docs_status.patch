@@ -1,0 +1,42 @@
+diff --git a/AGENTS.md b/AGENTS.md
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -42,4 +42,4 @@
+ - `src/boccia_vision/` para código reutilizável, `scripts/` para CLIs, `tests/` para testes, `experiments/` para configurações/manifests/resultados textuais, `docs/` para documentação.
+-- Os scripts `setup_project.py` e `download_datasets.py` foram discutidos, mas **não estavam presentes** na revisão; não alegar que já existem.
++- `scripts/setup_project.py` está implementado e prepara os diretórios locais de `v1` e `v2` sem sobrescrever dados. `scripts/download_datasets.py` realiza o download de exportações via rclone, exigindo configuração local de acesso ao Drive. A integração real ainda deve ser validada em máquina da equipe.
+ 
+ ## Como trabalhar neste repositório
+diff --git a/METHODOLOGY.md b/METHODOLOGY.md
+--- a/METHODOLOGY.md
++++ b/METHODOLOGY.md
+@@ -133,4 +133,4 @@
+ **Próximas implementações propostas, ainda não concluídas:**
+ 
+-1. Preparar importação parametrizada das exportações do Google Drive para `data/roboflow/{youtube,local,synthetic}/v1`; scripts de apoio `download_datasets.py` e `setup_project.py` foram discutidos, mas não encontrados no repositório.
++1. Validar em computador da equipe a autenticação e a sincronização via `download_datasets.py` das exportações do Google Drive para `data/roboflow/{youtube,local,synthetic}/v1`. `setup_project.py` já está implementado para inicializar as pastas locais.
+ 2. Inventariar imagens, grupos, labels, classes, duplicatas e diferenças entre origens.
+diff --git a/docs/README_PRIMEIRA_EXECUCAO.md b/docs/README_PRIMEIRA_EXECUCAO.md
+--- a/docs/README_PRIMEIRA_EXECUCAO.md
++++ b/docs/README_PRIMEIRA_EXECUCAO.md
+@@ -241,3 +241,3 @@
+-Esse novo fluxo ainda depende dos scripts `setup_project.py`, `download_datasets.py` e da refatoração de `reorganizar_dataset.py`.
++O `setup_project.py` e o `download_datasets.py` já foram implementados. Primeiro execute `python scripts/setup_project.py` (ou a prévia com `--dry-run`); depois configure o rclone conforme `docs/README_DOWNLOAD_DRIVE.md` e execute `python scripts/download_datasets.py --version v1`. A construção dos conjuntos Real, Sintético e Híbrido ainda depende da refatoração de `reorganizar_dataset.py`.
+ 
+ Ainda não estão implementados na branch `develop`:
+diff --git a/scripts/README.md b/scripts/README.md
+--- a/scripts/README.md
++++ b/scripts/README.md
+@@ -4,9 +4,8 @@
+ - `predict.py`: realiza inferência em uma imagem.
+ - `reorganizar_dataset.py`: script **legado** para divisão de uma única exportação em `data/roboflow/v1/`. Não atende ainda aos conjuntos Real, Sintético e Híbrido.
+-- `reset_primeiro_teste.py`: auxilia a remover artefatos locais de um teste antigo, com prévia e confirmação.
++- `setup_project.py`: inicializa os diretórios locais de `v1` e `v2` sem substituir arquivos.
++- `download_datasets.py`: baixa imagens, labels e YAMLs pelo Google Drive com rclone, sem sobrescrever dados locais; configurar o remote antes de usar.
+ 
+-## Scripts planejados (ainda ausentes na revisão)
++## Scripts planejados
+ 
+-- `setup_project.py`: inicialização segura da estrutura local.
+-- `download_datasets.py`: sincronização das fontes do Google Drive.
+ - `extrair_frames.py`: extração de frames de vídeo.

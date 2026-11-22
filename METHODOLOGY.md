@@ -132,7 +132,7 @@ O repositório `Ezbraz/boccia-vision` na branch `develop` foi inspecionado em 22
 
 **Próximas implementações propostas, ainda não concluídas:**
 
-1. Preparar importação parametrizada das exportações do Google Drive para `data/roboflow/{youtube,local,synthetic}/v1`; scripts de apoio `download_datasets.py` e `setup_project.py` foram discutidos, mas não encontrados no repositório.
+1. Validar em computador da equipe a autenticação e a sincronização via `download_datasets.py` das exportações do Google Drive para `data/roboflow/{youtube,local,synthetic}/v1`. `setup_project.py` já está implementado para inicializar as pastas locais.
 2. Inventariar imagens, grupos, labels, classes, duplicatas e diferenças entre origens.
 3. Corrigir padronização e validar classes por nome semântico.
 4. Planejar e congelar splits independentes, documentando o teste externo real.
